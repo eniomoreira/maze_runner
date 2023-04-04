@@ -1,7 +1,12 @@
+
+#include <chrono>
 #include <stdio.h>
 #include <stdlib.h> /*for system()*/
 #include <stack>
+#include <thread>
 #include <unistd.h> /*for usleep()*/
+
+using namespace std;
 
 // Matriz de char representnado o labirinto
 char** maze; // Voce também pode representar o labirinto como um vetor de vetores de char (vector<vector<char>>)
@@ -20,7 +25,6 @@ struct pos_t {
 // posicões a serem exploradas no labirinto
 std::stack<pos_t> valid_positions;
 /* Inserir elemento: 
-
 	 pos_t pos;
 	 pos.i = 1;
 	 pos.j = 3;
@@ -156,6 +160,13 @@ bool walk(pos_t pos) {
 			pos_t next_position = valid_positions.top();
 			valid_positions.pop();
 			walk(next_position);
+			while (!valid_positions.empty())
+			{
+				thread t(walk,valid_positions.top());
+				valid_positions.pop();
+				t.detach();
+			}
+			
 		}
 	return false;
 }
